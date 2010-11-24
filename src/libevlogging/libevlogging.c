@@ -12,6 +12,11 @@
 #include <time.h>
 
 
+// #if (_EVENT_NUMERIC_VERSION < 0x02000100)
+// #error "Libevent needs to be version 2.0.1-alpha or higher"
+// #endif
+
+
 // Initialise the logging system with all the info that we need,
 void log_init(logging_t *log, char *logfile, short int loglevel)
 {
@@ -102,7 +107,12 @@ void log_direct(logging_t *log)
 
 	// Delete the log event if there is one.
 	if (log->log_event) {
-		event_free(log->log_event);
+		#if (_EVENT_NUMERIC_VERSION < 0x02000000)
+			event_del(log->log_event);
+			free(log->log_event);
+		#else 
+			event_free(log->log_event);
+		#endif
 		log->log_event = NULL;
 	}
 
@@ -132,10 +142,14 @@ static void log_handler(int fd, short int flags, void *arg)
 	log = (logging_t *) arg;
 
 	// clear the timeout event.
-	assert(log->log_event);
-	event_free(log->log_event);
+	#if (_EVENT_NUMERIC_VERSION < 0x02000000)
+		event_del(log->log_event);
+		free(log->log_event);
+	#else 
+		event_free(log->log_event);
+	#endif
 	log->log_event = NULL;
-
+	
 	assert(log->outbuf->length > 0);
 
 	log_print(log, log->outbuf);
@@ -151,10 +165,10 @@ void logger(logging_t *log, short int level, const char *format, ...)
 	char buffer[30], timebuf[48];
 	struct timeval tv;
 	time_t curtime;
-  va_list ap;
-  int redo;
-  int n;
- 	struct timeval t = {.tv_sec = DEFAULT_LOG_TIMER, .tv_usec = 0};
+	va_list ap;
+	int redo;
+	int n;
+	struct timeval t = {.tv_sec = DEFAULT_LOG_TIMER, .tv_usec = 0};
 
 	
 	assert(log);
@@ -217,11 +231,20 @@ void logger(logging_t *log, short int level, const char *format, ...)
 		
 			// if the log_event is null, then we need to set the timeout event.
 			if (log->log_event == NULL) {
-				log->log_event = evtimer_new(log->evbase, log_handler, (void *) log);
+				#if (_EVENT_NUMERIC_VERSION < 0x02000000)
+					log->log_event = calloc(1, sizeof(*log->log_event));
+					evtimer_set(log->log_event, log_handler, (void *) log);
+					event_base_set(log->evbase, log->log_event);
+				#else
+					log->log_event = evtimer_new(log->evbase, log_handler, (void *) log);
+				#endif
 				assert(log->log_event);
 				evtimer_add(log->log_event, &t);
 			}
 		}
+		
+		
+		
 		
 		expbuf_clear(log->buildbuf);
 	}

@@ -6,9 +6,6 @@
 
 #define EVLOGGING_VERSION		0x0001
 
-#if (_EVENT_NUMERIC_VERSION < 0x02000100)
-	#error "Libevent needs to be version 2.0.1-alpha or higher"
-#endif
 
 #define DEFAULT_LOG_TIMER 1
 
