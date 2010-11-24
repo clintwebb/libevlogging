@@ -1,0 +1,59 @@
+.\" man page for libevlogging
+.\" Contact dev@hyper-active.com.au to correct errors or omissions. 
+.TH libevlogging 3 "2 June 2009" "1.00" "Library for logging output to a logfile."
+.SH NAME
+libevlogging \- library for logging output to a logfile, using libevent for buffering.
+.SH SYNOPSIS
+.\" Syntax goes here. 
+#include <evlogging.h>
+.sp
+.B void log_init(logging_t *log, char *logfile, short int loglevel)
+.br
+.B void log_free(logging_t *log)
+.sp
+.B void log_buffered(logging_t *log, struct event_base *evbase);
+.br
+.B void log_direct(logging_t *log)
+.sp
+.B void log_setlevel(logging_t *log, short int loglevel)
+.br
+.B void log_inclevel(logging_t *log)
+.br
+.B void log_declevel(logging_t *log)
+.br
+.B short int log_getlevel(logging_t *log);
+.br
+.B void logger(logging_t *log, short int level, const char *format, ...);
+.sp
+compile with the 
+.B -levlogging
+option
+.SH DESCRIPTION
+.B libevlogging
+is a simple library for writing log data to a file.  It uses libevent to buffer data and then write it to the file in one go.
+.sp
+.br
+
+.SH SEE ALSO
+.BR log_init (3),
+.BR evlogging_free (3),
+.BR evlogging_autoexpand (3),
+.BR evlogging_get (3),
+.BR evlogging_return (3),
+.BR evlogging_assign (3),
+.BR evlogging_release (3),
+.BR evlogging_active_count (3),
+.BR evlogging_inactive_count (3),
+.BR evlogging_peek (3),
+.BR evlogging_t (3)
+.SH BUGS
+No known bugs at this time. 
+.SH AUTHOR
+.nf
+Clint Webb (webb.clint@gmail.com)
+on behalf of Hyper-Active Systems, Australia.
+.br
+http://www.hyper-active.com.au/libevlogging/
+.fi
+.SH HISTORY
+May 29, 2009 \- v1.02 evlogging_autoexpand() added.
