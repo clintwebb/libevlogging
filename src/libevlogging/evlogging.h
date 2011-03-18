@@ -4,8 +4,8 @@
 #include <expbuf.h>
 #include <event.h>
 
-#define EVLOGGING_VERSION		0x0001
-
+#define EVLOGGING_VERSION	0x00010000
+#define EVLOGGING_VERSION_FULL	"v1.00.00"
 
 #define DEFAULT_LOG_TIMER 1
 
